@@ -5,15 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.library.RobotRunnerBase;
 import org.growingstems.measurements.Measurements.Time;
 
-public class RobotRunner extends TimedRobot {
-    private static final Time k_loopTime = Time.milliseconds(20.0);
+public class RobotRunner extends RobotRunnerBase {
+    private static final Time k_maxDesiredLoopTime = Time.milliseconds(20.0);
 
     private Robot m_robot;
     private Command m_autonomousCommand;
@@ -23,12 +21,7 @@ public class RobotRunner extends TimedRobot {
     }
 
     public RobotRunner() {
-        super(k_loopTime.asSeconds());
-        CommandScheduler.getInstance().setPeriod(k_loopTime.asSeconds());
-
-        enableLiveWindowInTest(false);
-        LiveWindow.setEnabled(false);
-        Shuffleboard.disableActuatorWidgets();
+        CommandScheduler.getInstance().setPeriod(k_maxDesiredLoopTime.asSeconds());
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
@@ -91,4 +84,10 @@ public class RobotRunner extends TimedRobot {
 
     @Override
     public void testExit() {}
+
+    @Override
+    protected void emergencyStopInit() {}
+
+    @Override
+    protected void emergencyStopPeriodic() {}
 }
