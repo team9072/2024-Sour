@@ -6,10 +6,8 @@ package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
@@ -19,15 +17,9 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.library.actuators.AngularPidf;
-import frc.library.drivers.ctre.CtreUtils;
 import frc.library.swerve.SwerveDriveBrake;
 import frc.library.utils.ConversionUtils;
-import frc.robot.Robot;
-import frc.robot.log.LogBuilder;
-import frc.robot.robotpose.PoseProvider;
 import frc.robot.subsystems.drive.constants.DriveConstants;
-import frc.robot.vision.VisionSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -41,9 +33,8 @@ import org.growingstems.measurements.Measurements.Length;
 import org.growingstems.measurements.Measurements.Velocity;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
+public class CtreSwerveDrive implements SwerveDriveI {
     protected final SwerveDrivetrain m_ctreDrive;
-    protected final VisionSystem m_visionSystem;
 
     // TODO: Remove when CTRE provides a more convenient solution
     // https://github.com/CrossTheRoadElec/Phoenix-Releases/issues/73
@@ -56,7 +47,7 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
     protected static final SteerRequestType k_steerControllerMode = SteerRequestType.MotionMagic;
 
     // PID constants
-    protected static final AngularPidf k_headingPid = new AngularPidf().withP(5.0);
+    protected static final double k_headingKp = 5.0;
 
     // Deadbands
     protected static final Velocity k_translationDeadband = Velocity.inchesPerSecond(0.1);
@@ -74,10 +65,9 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
     private final Consumer<List<Double>> m_logDriveVoltageOut;
 
     public CtreSwerveDrive(
-            LogBuilder builder,
+            frc.robot.logging.LogBuilder builder,
             SwerveDrivetrainConstants driveTrainConstants,
-            DriveConstants moduleConstants,
-            VisionSystem visionSystem) {
+            DriveConstants moduleConstants) {
         // Create CTRE Swerve Drive
         var moduleArray = moduleConstants
                 .asList()
@@ -85,7 +75,6 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
         m_ctreDrive =
                 new SwerveDrivetrain(driveTrainConstants, k_odometryUpdateRate.asHertz(), moduleArray);
 
-        var allMotors = new ArrayList<TalonFX>();
         // TODO: Remove when CTRE provides a more convenient solution
         // https://github.com/CrossTheRoadElec/Phoenix-Releases/issues/73
         for (int i = 0; i < moduleConstants.asList().size(); i++) {
@@ -166,8 +155,7 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
 
             // Reset Back to Factory Default
             var configurator = motor.getConfigurator();
-            configurator.apply(
-                    new TalonFXConfiguration(), CtreUtils.k_defaultConfiguratorTimeout.asSeconds());
+            configurator.apply(new TalonFXConfiguration());
 
             // Speed up signals for better characterization data
             BaseStatusSignal.setUpdateFrequencyForAll(
@@ -269,9 +257,9 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
         request.RotationalDeadband = k_rotationDeadband.asRadiansPerSecond();
 
         // Heading Controller PID Settings
-        request.HeadingController.setP(k_headingPid.p);
-        request.HeadingController.setI(k_headingPid.i.asHertz());
-        request.HeadingController.setD(k_headingPid.d.asSeconds());
+        request.HeadingController.setP(k_headingKp); // TODO: Use constants
+        request.HeadingController.setI(0.0); // TODO: Use constants
+        request.HeadingController.setD(0.0); // TODO: Use constants
         request.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
         m_ctreDrive.setControl(request);
@@ -310,44 +298,28 @@ public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
     // *****************************
     //    Pose Provider Functions
     // *****************************
-    @Override
     public Pose2dU<Length> getPose() {
         return ConversionUtils.fromWpi(m_ctreDrive.getState().Pose);
     }
 
-    @Override
     public void setPose(Pose2dU<Length> pose) {
         m_ctreDrive.seedFieldRelative(ConversionUtils.toWpiMeters(pose));
     }
 
-    @Override
     public Vector2dU<Velocity> getFieldVelocity() {
         return getVelocityVector().rotate(getPose().getRotation());
     }
 
-    @Override
     public AngularVelocity getYawRate() {
         return AngularVelocity.degreesPerSecond(
                 m_ctreDrive.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
     }
 
-    @Override
     public Angle getPitch() {
         return Angle.degrees(m_ctreDrive.getPigeon2().getPitch().getValueAsDouble());
     }
 
-    @Override
     public Angle getRoll() {
         return Angle.degrees(m_ctreDrive.getPigeon2().getRoll().getValueAsDouble());
-    }
-
-    @Override
-    public void updatePose() {
-        for (var result : m_visionSystem.getResults(this)) {
-            m_ctreDrive.addVisionMeasurement(
-                    ConversionUtils.toWpiMeters(result.visionRobotPose),
-                    result.timestamp.asSeconds(),
-                    result.visionMeasurementStdDevs);
-        }
     }
 }

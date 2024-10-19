@@ -11,16 +11,12 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.library.drivers.ctre.CtreUtils;
 import frc.library.utils.ConversionUtils;
-import frc.robot.Telemetry;
-import frc.robot.log.LogBuilder;
+import frc.robot.logging.LogBuilder;
 import frc.robot.subsystems.drive.constants.DriveConstants;
-import frc.robot.vision.VisionSystem;
-import frc.robot.vision.posevision.PhotonPoseSim;
 import org.growingstems.frc.util.WpiTimeSource;
 import org.growingstems.math.Pose2dU;
 import org.growingstems.math.Vector2dU;
@@ -29,12 +25,9 @@ import org.growingstems.measurements.Measurements.AngularVelocity;
 import org.growingstems.measurements.Measurements.Length;
 import org.growingstems.measurements.Measurements.Velocity;
 import org.growingstems.util.timer.Timer;
-import org.photonvision.simulation.VisionSystemSim;
 
 public class CtreSimDrive extends CtreSwerveDrive {
     private final Timer m_timer;
-
-    private final VisionSystemSim m_visionSim;
 
     protected final SwerveDrivetrain m_ctreOdometryReference;
 
@@ -43,9 +36,8 @@ public class CtreSimDrive extends CtreSwerveDrive {
     public CtreSimDrive(
             LogBuilder logBuilder,
             SwerveDrivetrainConstants driveTrainConstants,
-            DriveConstants moduleConstants,
-            VisionSystem visionSystem) {
-        super(logBuilder, driveTrainConstants, moduleConstants, visionSystem);
+            DriveConstants moduleConstants) {
+        super(logBuilder, driveTrainConstants, moduleConstants);
         m_timer = new WpiTimeSource().createTimer();
         m_timer.reset();
         m_timer.start();
@@ -55,25 +47,6 @@ public class CtreSimDrive extends CtreSwerveDrive {
                 .toArray(new SwerveModuleConstants[moduleConstants.asList().size()]);
         m_ctreOdometryReference =
                 new SwerveDrivetrain(driveTrainConstants, k_odometryUpdateRate.asHertz(), moduleArray);
-
-        m_visionSim = getVisionSystemSim(visionSystem);
-    }
-
-    private VisionSystemSim getVisionSystemSim(VisionSystem visionSystem) {
-        VisionSystemSim visionSim = new VisionSystemSim("main");
-        var tagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        for (var cam : visionSystem.getPoseVisions()) {
-            if (cam instanceof PhotonPoseSim) {
-                var simCam = ((PhotonPoseSim) cam).getSimulatedCamera();
-                var transform = ((PhotonPoseSim) cam).getTransform();
-                visionSim.addCamera(simCam, transform);
-            }
-        }
-
-        visionSim.addAprilTags(tagLayout);
-
-        return visionSim;
     }
 
     @Override
@@ -148,9 +121,9 @@ public class CtreSimDrive extends CtreSwerveDrive {
         request.RotationalDeadband = k_rotationDeadband.asRadiansPerSecond();
 
         // Heading Controller PID Settings
-        request.HeadingController.setP(k_headingPid.p);
-        request.HeadingController.setI(k_headingPid.i.asHertz());
-        request.HeadingController.setD(k_headingPid.d.asSeconds());
+        // request.HeadingController.setP(k_headingPid.p); // TODO: Figure out PID constants
+        // request.HeadingController.setI(k_headingPid.i.asHertz()); // TODO: Figure out PID constants
+        // request.HeadingController.setD(k_headingPid.d.asSeconds()); // TODO: Figure out PID constants
         request.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
         m_ctreDrive.setControl(request);
@@ -212,18 +185,11 @@ public class CtreSimDrive extends CtreSwerveDrive {
         return Angle.degrees(m_ctreOdometryReference.getPigeon2().getRoll().getValueAsDouble());
     }
 
-    @Override
     public void updatePose() {
         var dt = m_timer.get().asSeconds();
         m_timer.reset();
 
         m_ctreDrive.updateSimState(dt, RobotController.getBatteryVoltage());
         m_ctreOdometryReference.updateSimState(dt, RobotController.getBatteryVoltage());
-
-        var truthPose = m_ctreOdometryReference.getState().Pose;
-        m_visionSim.update(truthPose);
-
-        Telemetry.TeleDriveTeam.field.getObject("SimTruth").setPose(truthPose);
-        super.updatePose();
     }
 }
