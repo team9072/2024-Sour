@@ -172,7 +172,6 @@ out/
 *-window.json
 simgui*.json
 networktables.json
-*.dat
 
 # Logs
 logs/
@@ -185,3 +184,7 @@ ctre_sim/
 src/main/deploy/commitInfo.txt
 
 glass.json
+
+# clangd
+/.cache
+compile_commands.json
