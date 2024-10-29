@@ -5,18 +5,10 @@
 package frc.robot.logging;
 
 import com.ctre.phoenix6.CANBus.CANBusStatus;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.Telemetry;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.function.Consumer;
 import org.growingstems.frc.util.WpiTimeSource;
 import org.growingstems.math.Pose2dU;
-import org.growingstems.math.RateCalculator;
 import org.growingstems.math.Vector2dU;
 import org.growingstems.measurements.Angle;
 import org.growingstems.measurements.Measurements.Acceleration;
@@ -30,20 +22,12 @@ import org.growingstems.measurements.Measurements.Time;
 import org.growingstems.measurements.Measurements.Velocity;
 import org.growingstems.measurements.Measurements.Voltage;
 import org.growingstems.util.Timestamped;
-import org.growingstems.util.logger.AsyncLogEntry;
-import org.growingstems.util.logger.DataHiveLogger;
 import org.growingstems.util.logger.LogEntryType;
+import org.growingstems.util.logger.LogFileBuilder;
 
-public class LogBuilder extends DataHiveLogger.Builder {
-    private static final int k_maxFileAttempts = 10;
-    private static final int k_pipeSize = 65536;
-    private static final Time k_writeSleepTime = Time.milliseconds(250.0);
-    private static final int k_dumpSize = 0;
-
-    private long m_totalTransferred = 0;
-    private RateCalculator m_fileWriteRate = new RateCalculator(new WpiTimeSource());
-
+public class LogBuilder extends LogFileBuilder {
     // Helpful initializers
+    // TODO: Move this out into library
     public final Vector2dU<Velocity> zeroVelocityVector =
             new Vector2dU<>(Velocity.ZERO, Velocity.ZERO);
     public final Pose2dU<Length> zeroLengthPose = new Pose2dU<>(Length.ZERO, Length.ZERO, Angle.ZERO);
@@ -70,52 +54,10 @@ public class LogBuilder extends DataHiveLogger.Builder {
     public final LogEntryType<Timestamped<Pose2dU<Length>>> timestampedPose2dUType_in;
     public final LogEntryType<CANBusStatus> canBusStatusType;
 
-    // If defaultValue is `null`, the first value will be logged no matter what.
-    // If defaultValue is not null, nothing will be logged until a different value
-    // is received
-    // Note: This is only valid for Async Log Entries. We may have to change the
-    // input type to Consumer<T> to allow for more behavior options in the future,
-    // but for now, for safety, this is explicitly requiring an AsyncLogEntry<T>
-    public static <T> Consumer<T> makeNoRepeats(AsyncLogEntry<T> asyncConsumer, T defaultValue) {
-        return new Consumer<T>() {
-            private T prev = defaultValue;
-
-            @Override
-            public void accept(T value) {
-                // Only log when error code changes
-                if (prev != null && value.equals(prev)) {
-                    return;
-                }
-
-                asyncConsumer.accept(value);
-                prev = value;
-            }
-        };
-    }
-
-    public <T> Consumer<T> makeNoRepeatsAsyncEntry(
-            String name, LogEntryType<T> entryType, T defaultValue) {
-        return makeNoRepeats(makeAsyncLogEntry(name, entryType), defaultValue);
-    }
-
-    protected final File m_logDir;
-    protected final PipedOutputStream m_outputStream;
-    protected File m_logFile;
-
-    public LogBuilder(File logDir, String initialLogFileName) {
-        this(logDir, initialLogFileName, new PipedOutputStream());
-    }
-
-    private LogBuilder(File logDir, String initialLogFileName, PipedOutputStream outputStream) {
-        super(outputStream, new WpiTimeSource(), "2024 Crescendo Log File");
-
-        m_logDir = logDir;
-
-        m_outputStream = outputStream;
-        m_logFile = deconflictFilename(initialLogFileName);
+    private LogBuilder(File logDir, String initialLogFileName) {
+        super(logDir, initialLogFileName, "2025 Reefscape Log File", new WpiTimeSource());
 
         // Unit Types
-
         timeType_s = this.<Time>buildGroupType("Time")
                 .addMember("seconds", this.doubleType, Time::asSeconds)
                 .register();
@@ -218,89 +160,5 @@ public class LogBuilder extends DataHiveLogger.Builder {
                         .addMember("6V Fault Count", integerType, s -> RobotController.getFaultCount6V())
                         .register(),
                 new Object());
-    }
-
-    @Override
-    public DataHiveLogger init() throws IOException {
-        // Ensure log directory exists
-        m_logDir.mkdir();
-
-        @SuppressWarnings(
-                "resource") // We never close it because we continue logging until the robot turns off
-        var inputStream = new PipedInputStream(m_outputStream, k_pipeSize);
-        @SuppressWarnings(
-                "resource") // We never close it because we continue logging until the robot turns off
-        var fileStream = new FileOutputStream(m_logFile);
-        Telemetry.TeleRobot.logFile.setString(m_logFile.getName());
-        // Make separate thread transfer data to writing stream
-        new Thread() {
-            public void run() {
-                while (true) {
-                    try {
-                        var avail = inputStream.available();
-                        if (avail > k_dumpSize) {
-                            fileStream.write(inputStream.readNBytes(avail));
-
-                            m_totalTransferred += avail;
-                            var rate = m_fileWriteRate.update((double) m_totalTransferred);
-
-                            Telemetry.TeleRobot.loggedBytes.setInteger(avail);
-                            Telemetry.TeleRobot.loggedTotalBytesKB.setDouble(
-                                    (double) m_totalTransferred / 1000.0);
-                            Telemetry.TeleRobot.loggedKBPerSecond.setDouble(rate.asKilohertz());
-                        }
-                    } catch (IOException e) {
-                        DriverStation.reportError("Error occurred while writing", e.getStackTrace());
-                    }
-
-                    try {
-                        Thread.sleep((long) k_writeSleepTime.asMilliseconds());
-                    } catch (InterruptedException e) {
-                        DriverStation.reportError("Log thread interrupted while sleeping", e.getStackTrace());
-                    }
-                }
-            }
-        }.start();
-
-        return super.init();
-    }
-
-    private File stringToFileHandle(String logName) {
-        return new File(m_logDir, logName + ".dhl");
-    }
-
-    /**
-     * Creates a File object for a new file with the given name.. DO NOT INCLUDE THE EXTENSION
-     *
-     * @param logName The extension-less log file name
-     * @return A File object that is not already used (unless the max attempts are used)
-     */
-    private File deconflictFilename(String logName) {
-        int i = 0;
-        File file = stringToFileHandle(logName);
-        do {
-            if (file.exists()) {
-                file = stringToFileHandle(logName + "_" + Integer.toString(++i));
-            } else {
-                return file;
-            }
-        } while (i < k_maxFileAttempts);
-        return stringToFileHandle(logName + "_MAX");
-    }
-
-    /**
-     * Renames the log file. DO NOT INCLUDE THE EXTENSION
-     *
-     * @param logName The extension-less log file name
-     * @return True if the rename was successful
-     */
-    public boolean renameTo(String logName) {
-        File newFile = deconflictFilename(logName);
-        boolean success = m_logFile.renameTo(newFile);
-        if (success) {
-            m_logFile = newFile;
-            Telemetry.TeleRobot.logFile.setString(m_logFile.getName());
-        }
-        return success;
     }
 }
