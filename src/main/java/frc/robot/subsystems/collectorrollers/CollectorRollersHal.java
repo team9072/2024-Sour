@@ -16,6 +16,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.library.CtreUtils;
 import frc.robot.Robot;
+import frc.robot.logging.LogBuilder;
+import java.util.function.Consumer;
 import org.growingstems.control.actuators.MotorActuator;
 import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
@@ -33,12 +35,11 @@ public class CollectorRollersHal implements CollectorRollersHalI {
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
 
     // Logging
-    // private final Consumer<Voltage> m_logPower;
-    // private final Consumer<Current> m_logSupplyCurrent;
-    // private final Consumer<Current> m_logStatorCurrent;
+    private final Consumer<Voltage> m_logPower;
+    private final Consumer<Current> m_logSupplyCurrent;
+    private final Consumer<Current> m_logStatorCurrent;
 
-    // public GrowlerCollectorRollersHal(LogBuilder builder) {
-    public CollectorRollersHal() {
+    public CollectorRollersHal(LogBuilder builder) {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -80,21 +81,20 @@ public class CollectorRollersHal implements CollectorRollersHalI {
         // -------------
         //    Logging
         // -------------
-        // m_logPower =
-        //         builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts,
-        // Voltage.ZERO);
-        // m_logSupplyCurrent = builder.makeSyncLogEntry(
-        //         "Collector/Roller/Supply Current", builder.currentType_amps, Current.ZERO);
-        // m_logStatorCurrent = builder.makeSyncLogEntry(
-        //         "Collector/Roller/Stator Current", builder.currentType_amps, Current.ZERO);
+        m_logPower =
+                builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts, Voltage.ZERO);
+        m_logSupplyCurrent = builder.makeSyncLogEntry(
+                "Collector/Roller/Supply Current", builder.currentType_amps, Current.ZERO);
+        m_logStatorCurrent = builder.makeSyncLogEntry(
+                "Collector/Roller/Stator Current", builder.currentType_amps, Current.ZERO);
     }
 
     @Override
     public void update() {
         // Logging
-        // m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
-        // m_logSupplyCurrent.accept(Current.amps(m_motor.getSupplyCurrent().getValueAsDouble()));
-        // m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));
+        m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
+        m_logSupplyCurrent.accept(Current.amps(m_motor.getSupplyCurrent().getValueAsDouble()));
+        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));
     }
 
     @Override
