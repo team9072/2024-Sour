@@ -33,6 +33,12 @@ public class CollectorRollersHal implements CollectorRollersHalI {
     // Motor Configuration
     private static final int k_canId = 39;
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
+    // CounterClockwise_Positive is the default value of a TalonFX
+    private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
+    private static final Current k_supplyCurrentLimit = Current.amps(25.0);
+    private static final Current k_statorCurrentLimit = Current.amps(120.0);
+
+    //
 
     // Logging
     private final Consumer<Voltage> m_logPower;
@@ -52,25 +58,39 @@ public class CollectorRollersHal implements CollectorRollersHalI {
         // General Motor Settings
         var general = new MotorOutputConfigs();
         general.NeutralMode = k_intendedNeutralMode;
-        general.Inverted = InvertedValue.Clockwise_Positive;
+        general.Inverted = k_invertedSetting;
         configuration.withMotorOutput(general);
 
         // Current Limiting
         var currentLimits = new CurrentLimitsConfigs();
         currentLimits.SupplyCurrentLimitEnable = true;
-        currentLimits.SupplyCurrentLimit = Current.amps(25.0).asAmps();
+        currentLimits.SupplyCurrentLimit = k_supplyCurrentLimit.asAmps();
+        currentLimits.StatorCurrentLimit = k_statorCurrentLimit.asAmps();
         configuration.withCurrentLimits(currentLimits);
 
         m_configurator.apply(configuration, CtreUtils.k_defaultConfiguratorTimeout.asSeconds());
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50, m_motor.getPosition(), m_motor.getVelocity());
+        // ----------------------------
+        //    Status Signal Settings
+        // ----------------------------
+        // 100 Hz Rate (Every 10ms)
         BaseStatusSignal.setUpdateFrequencyForAll(
-                20,
+                100,
+                m_motor.getPosition(),
+                m_motor.getVelocity(),
                 m_motor.getAcceleration(),
                 m_motor.getSupplyVoltage(),
                 m_motor.getMotorVoltage(),
                 m_motor.getSupplyCurrent(),
-                m_motor.getStatorCurrent());
+                m_motor.getTorqueCurrent());
+        // 4 Hz Rate (every 100ms)
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                4,
+                m_motor.getProcessorTemp(),
+                m_motor.getDeviceTemp(),
+                m_motor.getAncillaryDeviceTemp(),
+                m_motor.getFaultField(),
+                m_motor.getStickyFaultField());
         m_motor.optimizeBusUtilization();
 
         // -----------------------
