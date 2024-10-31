@@ -81,12 +81,11 @@ public class CollectorRollersHal implements CollectorRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower =
-                builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts, Voltage.ZERO);
-        m_logSupplyCurrent = builder.makeSyncLogEntry(
-                "Collector/Roller/Supply Current", builder.currentType_amps, Current.ZERO);
-        m_logStatorCurrent = builder.makeSyncLogEntry(
-                "Collector/Roller/Stator Current", builder.currentType_amps, Current.ZERO);
+        m_logPower = builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts);
+        m_logSupplyCurrent =
+                builder.makeSyncLogEntry("Collector/Roller/Supply Current", builder.currentType_amps);
+        m_logStatorCurrent =
+                builder.makeSyncLogEntry("Collector/Roller/Stator Current", builder.currentType_amps);
     }
 
     @Override
