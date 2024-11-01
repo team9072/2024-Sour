@@ -13,24 +13,6 @@ import org.growingstems.measurements.Measurements.Time;
 /** Extended by other helper classes/functions to setup CTRE CAN devices. */
 public abstract class CtreUtils {
     /**
-     * Timeout that is used for hardware calls that are configuring the device. These calls can take
-     * longer and should be given a little more time to occur.
-     */
-    public static final Time k_cfgTimeout = Time.milliseconds(100.0);
-
-    /**
-     * Timeout that is used for hardware calls that are configuring the device that take longer then
-     * normal config calls. These calls can take longer and should be given even more time to occur.
-     */
-    public static final Time k_cfgTimeoutLong = Time.milliseconds(200.0);
-
-    /**
-     * Timeout that is used for regular set hardware calls. These calls are generally quick and
-     * don't need a long timeout.
-     */
-    public static final Time k_setTimeout = Time.milliseconds(20.0);
-
-    /**
      * The default timeout used when applying the configurator on a CTRE device.
      */
     public static final Time k_defaultConfiguratorTimeout = Time.seconds(0.5);
