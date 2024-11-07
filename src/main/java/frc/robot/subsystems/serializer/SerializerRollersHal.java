@@ -97,11 +97,11 @@ public class SerializerRollersHal implements SerializerRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts);
+        m_logPower = builder.makeSyncLogEntry("Serializer/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Supply Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Serializer/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Serializer/Stator Current", builder.currentType_amps);
     }
 
     @Override
