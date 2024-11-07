@@ -31,7 +31,7 @@ public class CollectorRollersHal implements CollectorRollersHalI {
     private final TalonFXConfigurator m_configurator;
 
     // Motor Configuration
-    private static final int k_canId = 39;
+    private static final int k_canId = 16;
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
     // CounterClockwise_Positive is the default value of a TalonFX
     private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
