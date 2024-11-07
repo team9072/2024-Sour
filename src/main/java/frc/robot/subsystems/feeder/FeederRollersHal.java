@@ -97,11 +97,11 @@ public class FeederRollersHal implements FeederRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts);
+        m_logPower = builder.makeSyncLogEntry("Feeder/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Supply Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Feeder/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Feeder/Stator Current", builder.currentType_amps);
     }
 
     @Override
