@@ -1,8 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-
-package frc.robot.subsystems.collectorrollers;
+package frc.robot.subsystems.elevator.rollers;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -23,7 +19,7 @@ import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class CollectorRollersHal implements CollectorRollersHalI {
+public class ElevatorRollersHal implements ElevatorRollersHalI {
 
     // Motor
     private final MotorActuator m_actuator;
@@ -31,7 +27,7 @@ public class CollectorRollersHal implements CollectorRollersHalI {
     private final TalonFXConfigurator m_configurator;
 
     // Motor Configuration
-    private static final int k_canId = 16;
+    private static final int k_canId = 18;
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
     // CounterClockwise_Positive is the default value of a TalonFX
     private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
@@ -45,7 +41,7 @@ public class CollectorRollersHal implements CollectorRollersHalI {
     private final Consumer<Current> m_logSupplyCurrent;
     private final Consumer<Current> m_logStatorCurrent;
 
-    public CollectorRollersHal(LogBuilder builder) {
+    public ElevatorRollersHal(LogBuilder builder) {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -101,11 +97,11 @@ public class CollectorRollersHal implements CollectorRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts);
+        m_logPower = builder.makeSyncLogEntry("Elevator/Roller/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Supply Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Elevator/Roller/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Elevator/Roller/Stator Current", builder.currentType_amps);
     }
 
     @Override
