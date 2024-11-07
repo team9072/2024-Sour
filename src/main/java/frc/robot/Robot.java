@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Robot {
+    public static final String k_canivoreCan = "CANivore";
 
     private Command m_autoCommand = null;
 
