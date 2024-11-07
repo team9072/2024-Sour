@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake.rollers;
 
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class CollectorRollersDummyHal implements IntakeRollersHalI {
+public class IntakeRollersDummyHal implements IntakeRollersHalI {
     @Override
     public void setPower(Voltage power) {
         // NOP

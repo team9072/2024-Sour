@@ -97,11 +97,11 @@ public class IntakeRollersHal implements IntakeRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Collector/Roller/Power", builder.voltageType_volts);
+        m_logPower = builder.makeSyncLogEntry("Intake/Roller/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Supply Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Intake/Roller/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Collector/Roller/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Intake/Roller/Stator Current", builder.currentType_amps);
     }
 
     @Override
