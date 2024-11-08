@@ -21,11 +21,11 @@ public class Serializer extends SubsystemBase {
     }
 
     private void startForward() {
-        m_rollers.setPower(new Voltage(4));
+        m_rollers.setPower(new Voltage(8));
     }
 
     private void startReverse() {
-        m_rollers.setPower(new Voltage(-4));
+        m_rollers.setPower(new Voltage(-8));
     }
 
     public Command insertToShooter() {

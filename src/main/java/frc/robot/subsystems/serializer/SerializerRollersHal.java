@@ -30,7 +30,7 @@ public class SerializerRollersHal implements SerializerRollersHalI {
     private static final int k_canId = 17;
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
     // CounterClockwise_Positive is the default value of a TalonFX
-    private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
+    private static final InvertedValue k_invertedSetting = InvertedValue.Clockwise_Positive;
     private static final Current k_supplyCurrentLimit = Current.amps(25.0);
     private static final Current k_statorCurrentLimit = Current.amps(120.0);
 

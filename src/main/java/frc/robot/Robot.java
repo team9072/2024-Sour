@@ -49,10 +49,13 @@ public class Robot {
 
     private void configureBindings() {
         m_driveController.b().whileTrue(
-            Commands.parallel(
+            m_feeder.intake().until(m_feeder.getRearSensor()));
+
+        m_driveController.x().whileTrue(
+            Commands.race(
                 m_feeder.intake(),
                 m_serializer.reverseToAmp(),
-                m_elevator.loadNote()));//.until(m_feeder.getRearSensor()));
+                m_elevator.loadNote()));
         
         m_driveController.a().whileTrue(
             m_feeder.reverse().until(m_feeder.getFrontSensor().negate()));

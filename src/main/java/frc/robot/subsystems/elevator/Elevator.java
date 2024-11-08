@@ -23,7 +23,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private void startRollersForward() {
-        m_rollers.setPower(new Voltage(4));
+        m_rollers.setPower(new Voltage(12));
     }
 
     public Trigger getSensor() {
@@ -31,7 +31,8 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command loadNote() {
-        return startEnd(this::startRollersForward, this::stopRollers).until(m_sensor);
+        return startEnd(this::startRollersForward, this::stopRollers)
+        .raceWith(Commands.waitUntil(m_sensor).andThen(Commands.waitSeconds(0.1)));
     }
 
     public Command ejectNote() {
