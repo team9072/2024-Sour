@@ -37,11 +37,11 @@ public class SerializerRollersHal implements SerializerRollersHalI {
     //
 
     // Logging
-    private final Consumer<Voltage> m_logPower;
+    /*private final Consumer<Voltage> m_logPower;
     private final Consumer<Current> m_logSupplyCurrent;
-    private final Consumer<Current> m_logStatorCurrent;
+    private final Consumer<Current> m_logStatorCurrent;*/
 
-    public SerializerRollersHal(LogBuilder builder) {
+    public SerializerRollersHal() {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -97,19 +97,19 @@ public class SerializerRollersHal implements SerializerRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Serializer/Power", builder.voltageType_volts);
+        /*m_logPower = builder.makeSyncLogEntry("Serializer/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
                 builder.makeSyncLogEntry("Serializer/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Serializer/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Serializer/Stator Current", builder.currentType_amps);*/
     }
 
     @Override
     public void update() {
         // Logging
-        m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
+        /*m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
         m_logSupplyCurrent.accept(Current.amps(m_motor.getSupplyCurrent().getValueAsDouble()));
-        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));
+        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));*/
     }
 
     @Override

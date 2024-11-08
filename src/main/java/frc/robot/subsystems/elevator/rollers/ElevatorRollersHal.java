@@ -37,11 +37,11 @@ public class ElevatorRollersHal implements ElevatorRollersHalI {
     //
 
     // Logging
-    private final Consumer<Voltage> m_logPower;
+    /*private final Consumer<Voltage> m_logPower;
     private final Consumer<Current> m_logSupplyCurrent;
-    private final Consumer<Current> m_logStatorCurrent;
+    private final Consumer<Current> m_logStatorCurrent;*/
 
-    public ElevatorRollersHal(LogBuilder builder) {
+    public ElevatorRollersHal() {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -97,19 +97,19 @@ public class ElevatorRollersHal implements ElevatorRollersHalI {
         // -------------
         //    Logging
         // -------------
-        m_logPower = builder.makeSyncLogEntry("Elevator/Roller/Power", builder.voltageType_volts);
+        /*m_logPower = builder.makeSyncLogEntry("Elevator/Roller/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
                 builder.makeSyncLogEntry("Elevator/Roller/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Elevator/Roller/Stator Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("Elevator/Roller/Stator Current", builder.currentType_amps);*/
     }
 
     @Override
     public void update() {
         // Logging
-        m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
+        /*m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
         m_logSupplyCurrent.accept(Current.amps(m_motor.getSupplyCurrent().getValueAsDouble()));
-        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));
+        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));*/
     }
 
     @Override

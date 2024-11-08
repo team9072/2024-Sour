@@ -13,7 +13,7 @@ public class Elevator extends SubsystemBase {
     private final ElevatorRollersHalI m_rollers;
     private final Trigger m_sensor;
 
-    Elevator(ElevatorRollersHalI rollers, SensorHalI sensor) {
+    public Elevator(ElevatorRollersHalI rollers, SensorHalI sensor) {
         m_rollers = rollers;
         m_sensor = new Trigger(sensor::hasNote);
     }
