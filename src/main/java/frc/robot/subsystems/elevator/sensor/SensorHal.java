@@ -11,6 +11,6 @@ public class SensorHal implements SensorHalI {
     }
 
     public boolean hasNote() {
-        return m_frontBreak.get();
+        return !m_frontBreak.get();
     }
 }
