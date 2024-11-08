@@ -1,6 +1,6 @@
 package frc.robot.subsystems.feeder.sensors;
 
 public interface SensorHalI {
-    public boolean getFrontBreak();
-    public boolean getRearBreak();
+    public boolean frontHasNote();
+    public boolean rearHasNote();
 }
