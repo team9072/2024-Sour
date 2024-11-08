@@ -5,10 +5,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.growingstems.measurements.Measurements.Voltage;
 
 public class Serializer extends SubsystemBase {
-    private final SerializerRollersHal m_rollers;
+    private final SerializerRollersHalI m_rollers;
 
-    public Serializer(SerializerRollersHal rollers) {
+    public Serializer(SerializerRollersHalI rollers) {
         m_rollers = rollers;
+    }
+
+    @Override
+    public void periodic() {
+        m_rollers.update();
     }
 
     private void _stop() {

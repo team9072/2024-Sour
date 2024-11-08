@@ -53,7 +53,7 @@ public class LogBuilder extends LogFileBuilder {
     public final LogEntryType<Timestamped<Pose2dU<Length>>> timestampedPose2dUType_in;
     public final LogEntryType<CANBusStatus> canBusStatusType;
 
-    private LogBuilder(File logDir, String initialLogFileName) {
+    public LogBuilder(File logDir, String initialLogFileName) {
         super(logDir, initialLogFileName, "2025 Reefscape Log File", new WpiTimeSource());
 
         // Unit Types
