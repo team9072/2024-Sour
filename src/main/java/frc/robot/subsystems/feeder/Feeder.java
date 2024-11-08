@@ -31,11 +31,11 @@ public class Feeder extends SubsystemBase {
     }
 
     private void startIntake() {
-        m_rollers.setPower(new Voltage(4));
+        m_rollers.setPower(new Voltage(12));
     }
 
     private void startReverse() {
-        m_rollers.setPower(new Voltage(-4));
+        m_rollers.setPower(new Voltage(-12));
     }
 
     public Trigger getFrontSensor() {

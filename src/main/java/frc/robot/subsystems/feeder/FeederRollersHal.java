@@ -31,8 +31,8 @@ public class FeederRollersHal implements FeederRollersHalI {
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
     // CounterClockwise_Positive is the default value of a TalonFX
     private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
-    private static final Current k_supplyCurrentLimit = Current.amps(25.0);
-    private static final Current k_statorCurrentLimit = Current.amps(120.0);
+    private static final Current k_supplyCurrentLimit = Current.amps(10.0);
+    private static final Current k_statorCurrentLimit = Current.amps(20.0);
 
     //
 
