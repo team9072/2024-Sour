@@ -5,19 +5,45 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.logging.LogBuilder;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederRollersDummyHal;
+import frc.robot.subsystems.feeder.FeederRollersHal;
+import frc.robot.subsystems.feeder.sensors.SensorDummyHal;
+import frc.robot.subsystems.feeder.sensors.SensorHal;
 
 public class Robot {
     public static final String k_canivoreCan = "CANivore";
+
+    public final CommandXboxController m_driveController = new CommandXboxController(0);
+
+    public final Feeder m_feeder;
 
     private Command m_autoCommand = null;
 
     public Robot() {
         configureBindings();
+
+        if (RobotRunner.isReal()) {
+            m_feeder = new Feeder(new FeederRollersHal(), new SensorHal());
+        } else {
+            m_feeder = new Feeder(new FeederRollersDummyHal(), new SensorDummyHal());
+        }
     }
 
     public void update() {}
 
-    private void configureBindings() {}
+    private void configureBindings() {
+        m_driveController.b().whileTrue(
+            m_feeder.intake()
+            .deadlineWith(Commands.waitUntil(m_feeder.getFrontSensor())));
+        
+        m_driveController.a().whileTrue(
+            m_feeder.reverse()
+            .deadlineWith(Commands.waitUntil(m_feeder.getFrontSensor().negate())));
+    }
 
     public void updateAutoCommand() {}
 

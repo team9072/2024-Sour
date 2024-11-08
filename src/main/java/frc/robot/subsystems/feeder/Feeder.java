@@ -2,16 +2,27 @@ package frc.robot.subsystems.feeder;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.feeder.sensors.SensorHal;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.feeder.sensors.SensorHalI;
 import org.growingstems.measurements.Measurements.Voltage;
 
 public class Feeder extends SubsystemBase {
-    private final FeederRollersHal m_rollers;
-    private final SensorHal m_sensor;
+    private final FeederRollersHalI m_rollers;
+    private final SensorHalI m_sensors;
 
-    public Feeder(FeederRollersHal rollers, SensorHal sensor) {
+    private final Trigger m_frontSensor;
+    private final Trigger m_rearSensor;
+
+    public Feeder(FeederRollersHalI rollers, SensorHalI sensor) {
         m_rollers = rollers;
-        m_sensor = sensor;
+        m_sensors = sensor;
+        m_frontSensor = new Trigger(m_sensors::frontHasNote);
+        m_rearSensor = new Trigger(m_sensors::rearHasNote);
+    }
+
+    @Override
+    public void periodic() {
+        m_rollers.update();
     }
 
     private void _stop() {
@@ -27,12 +38,12 @@ public class Feeder extends SubsystemBase {
         m_rollers.setPower(new Voltage(-4));
     }
 
-    public boolean getFrontSensor() {
-        return m_sensor.frontHasNote();
+    public Trigger getFrontSensor() {
+        return m_frontSensor;
     }
 
-    public boolean getRearSensor() {
-        return m_sensor.rearHasNote();
+    public Trigger getRearSensor() {
+        return m_rearSensor;
     }
 
     public Command stop() {
