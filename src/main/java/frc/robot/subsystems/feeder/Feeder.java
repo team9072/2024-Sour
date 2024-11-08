@@ -1,12 +1,11 @@
 package frc.robot.subsystems.feeder;
 
-import org.growingstems.measurements.Measurements.Voltage;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.feeder.sensors.SensorHal;
+import org.growingstems.measurements.Measurements.Voltage;
 
-public class Feeder extends SubsystemBase{
+public class Feeder extends SubsystemBase {
     private final FeederRollersHal m_rollers;
     private final SensorHal m_sensor;
 
@@ -19,11 +18,11 @@ public class Feeder extends SubsystemBase{
         m_rollers.brake();
         m_rollers.brake();
     }
-    
+
     private void startIntake() {
         m_rollers.setPower(new Voltage(4));
     }
-    
+
     private void startReverse() {
         m_rollers.setPower(new Voltage(-4));
     }
@@ -35,11 +34,11 @@ public class Feeder extends SubsystemBase{
     public boolean getRearSensor() {
         return m_sensor.rearHasNote();
     }
-    
+
     public Command stop() {
         return runOnce(this::_stop);
     }
-    
+
     public Command intake() {
         return startEnd(this::startIntake, this::_stop);
     }

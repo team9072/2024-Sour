@@ -1,9 +1,8 @@
 package frc.robot.subsystems.serializer;
 
-import org.growingstems.measurements.Measurements.Voltage;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.growingstems.measurements.Measurements.Voltage;
 
 public class Serializer extends SubsystemBase {
     private final SerializerRollersHal m_rollers;
