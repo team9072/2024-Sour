@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer.sensors;
+package frc.robot.subsystems.feeder.sensors;
 
 public interface SensorHalI {
     public boolean getFrontBreak();

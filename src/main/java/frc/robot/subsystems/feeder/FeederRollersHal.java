@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer.feeder;
+package frc.robot.subsystems.feeder;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;

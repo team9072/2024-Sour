@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer.decisionrollers;
+package frc.robot.subsystems.serializer;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -19,7 +19,7 @@ import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class DecisionRollersHal implements DecisionRollersHalI {
+public class SerializerRollersHal implements SerializerRollersHalI {
 
     // Motor
     private final MotorActuator m_actuator;
@@ -41,7 +41,7 @@ public class DecisionRollersHal implements DecisionRollersHalI {
     private final Consumer<Current> m_logSupplyCurrent;
     private final Consumer<Current> m_logStatorCurrent;
 
-    public DecisionRollersHal(LogBuilder builder) {
+    public SerializerRollersHal(LogBuilder builder) {
         // --------------------
         //    Motor Settings
         // --------------------
