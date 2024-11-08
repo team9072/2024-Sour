@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer;
+package frc.robot.subsystems.serializer.sensors;
 
 public class SensorDummyHal implements SensorHalI {
 	@Override

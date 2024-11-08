@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer;
+package frc.robot.subsystems.serializer.decisionrollers;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -19,7 +19,7 @@ import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class SerializerRollersHal implements SerializerRollersHalI {
+public class DecisionRollersHal implements DecisionRollersHalI {
 
     // Motor
     private final MotorActuator m_actuator;
@@ -27,7 +27,7 @@ public class SerializerRollersHal implements SerializerRollersHalI {
     private final TalonFXConfigurator m_configurator;
 
     // Motor Configuration
-    private static final int k_canId = 39;
+    private static final int k_canId = 17;
     private static final NeutralModeValue k_intendedNeutralMode = NeutralModeValue.Brake;
     // CounterClockwise_Positive is the default value of a TalonFX
     private static final InvertedValue k_invertedSetting = InvertedValue.CounterClockwise_Positive;
@@ -41,7 +41,7 @@ public class SerializerRollersHal implements SerializerRollersHalI {
     private final Consumer<Current> m_logSupplyCurrent;
     private final Consumer<Current> m_logStatorCurrent;
 
-    public SerializerRollersHal(LogBuilder builder) {
+    public DecisionRollersHal(LogBuilder builder) {
         // --------------------
         //    Motor Settings
         // --------------------

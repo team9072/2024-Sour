@@ -1,9 +1,9 @@
-package frc.robot.subsystems.serializer;
+package frc.robot.subsystems.serializer.feeder;
 
 import frc.library.StartupNeutralMode;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public interface SerializerRollersHalI extends StartupNeutralMode {
+public interface FeederRollersHalI extends StartupNeutralMode {
     void brake();
 
     void coast();

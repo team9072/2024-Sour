@@ -1,8 +1,8 @@
-package frc.robot.subsystems.feeder;
+package frc.robot.subsystems.serializer.decisionrollers;
 
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class FeederRollersDummyHal implements FeederRollersHalI {
+public class DecisionRollersDummyHal implements DecisionRollersHalI {
     @Override
     public void setPower(Voltage power) {
         // NOP
