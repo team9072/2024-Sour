@@ -15,7 +15,7 @@ import frc.robot.subsystems.feeder.sensors.SensorDummyHal;
 import frc.robot.subsystems.feeder.sensors.SensorHal;
 
 public class Robot {
-    public static final String k_canivoreCan = "CANivore";
+    public static final String k_canivoreCan = "canivore1";
 
     public final CommandXboxController m_driveController = new CommandXboxController(0);
 
@@ -24,25 +24,23 @@ public class Robot {
     private Command m_autoCommand = null;
 
     public Robot() {
-        configureBindings();
-
         if (RobotRunner.isReal()) {
             m_feeder = new Feeder(new FeederRollersHal(), new SensorHal());
         } else {
             m_feeder = new Feeder(new FeederRollersDummyHal(), new SensorDummyHal());
         }
+
+        configureBindings();
     }
 
     public void update() {}
 
     private void configureBindings() {
         m_driveController.b().whileTrue(
-            m_feeder.intake()
-            .deadlineWith(Commands.waitUntil(m_feeder.getFrontSensor())));
+            m_feeder.intake().until(m_feeder.getRearSensor()));
         
         m_driveController.a().whileTrue(
-            m_feeder.reverse()
-            .deadlineWith(Commands.waitUntil(m_feeder.getFrontSensor().negate())));
+            m_feeder.reverse().until(m_feeder.getFrontSensor().negate()));
     }
 
     public void updateAutoCommand() {}

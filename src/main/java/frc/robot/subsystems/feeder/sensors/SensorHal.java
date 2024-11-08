@@ -3,10 +3,10 @@ package frc.robot.subsystems.feeder.sensors;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class SensorHal implements SensorHalI {
-    private static final int k_frontDioId = 7;
+    private static final int k_frontDioId = 1;
     private final DigitalInput m_frontBreak;
 
-    private static final int k_rearDioId = 7;
+    private static final int k_rearDioId = 2;
     private final DigitalInput m_rearBreak;
 
     public SensorHal() {
