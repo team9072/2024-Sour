@@ -1,4 +1,4 @@
-package frc.robot.subsystems.feeder;
+package frc.robot.subsystems.serializer.feeder;
 
 import frc.library.StartupNeutralMode;
 import org.growingstems.measurements.Measurements.Voltage;

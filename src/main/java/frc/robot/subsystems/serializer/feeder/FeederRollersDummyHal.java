@@ -1,8 +1,8 @@
-package frc.robot.subsystems.serializer;
+package frc.robot.subsystems.serializer.feeder;
 
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class SerializerRollersDummyHal implements SerializerRollersHalI {
+public class FeederRollersDummyHal implements FeederRollersHalI {
     @Override
     public void setPower(Voltage power) {
         // NOP

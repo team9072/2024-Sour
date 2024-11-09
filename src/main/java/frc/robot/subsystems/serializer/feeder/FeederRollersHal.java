@@ -1,4 +1,4 @@
-package frc.robot.subsystems.feeder;
+package frc.robot.subsystems.serializer.feeder;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -12,8 +12,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.library.CtreUtils;
 import frc.robot.Robot;
-import frc.robot.logging.LogBuilder;
-import java.util.function.Consumer;
 import org.growingstems.control.actuators.MotorActuator;
 import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;

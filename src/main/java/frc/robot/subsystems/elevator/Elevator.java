@@ -1,13 +1,12 @@
 package frc.robot.subsystems.elevator;
 
-import org.growingstems.measurements.Measurements.Voltage;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.elevator.rollers.ElevatorRollersHalI;
 import frc.robot.subsystems.elevator.sensor.SensorHalI;
+import org.growingstems.measurements.Measurements.Voltage;
 
 public class Elevator extends SubsystemBase {
     private final ElevatorRollersHalI m_rollers;
@@ -32,11 +31,11 @@ public class Elevator extends SubsystemBase {
 
     public Command loadNote() {
         return startEnd(this::startRollersForward, this::stopRollers)
-        .raceWith(Commands.waitUntil(m_sensor).andThen(Commands.waitSeconds(0.1)));
+                .raceWith(Commands.waitUntil(m_sensor).andThen(Commands.waitSeconds(0.1)));
     }
 
     public Command ejectNote() {
         return startEnd(this::startRollersForward, this::stopRollers)
-            .raceWith(Commands.waitUntil(m_sensor.negate()).andThen(Commands.waitSeconds(0.2)));
+                .raceWith(Commands.waitUntil(m_sensor.negate()).andThen(Commands.waitSeconds(0.2)));
     }
 }

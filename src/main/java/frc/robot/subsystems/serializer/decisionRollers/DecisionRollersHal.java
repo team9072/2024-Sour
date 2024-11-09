@@ -1,4 +1,4 @@
-package frc.robot.subsystems.serializer;
+package frc.robot.subsystems.serializer.decisionRollers;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -12,14 +12,12 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.library.CtreUtils;
 import frc.robot.Robot;
-import frc.robot.logging.LogBuilder;
-import java.util.function.Consumer;
 import org.growingstems.control.actuators.MotorActuator;
 import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class SerializerRollersHal implements SerializerRollersHalI {
+public class DecisionRollersHal implements DecisionRollersHalI {
 
     // Motor
     private final MotorActuator m_actuator;
@@ -41,7 +39,7 @@ public class SerializerRollersHal implements SerializerRollersHalI {
     private final Consumer<Current> m_logSupplyCurrent;
     private final Consumer<Current> m_logStatorCurrent;*/
 
-    public SerializerRollersHal() {
+    public DecisionRollersHal() {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -97,11 +95,11 @@ public class SerializerRollersHal implements SerializerRollersHalI {
         // -------------
         //    Logging
         // -------------
-        /*m_logPower = builder.makeSyncLogEntry("Serializer/Power", builder.voltageType_volts);
+        /*m_logPower = builder.makeSyncLogEntry("DecisionRollers/Power", builder.voltageType_volts);
         m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Serializer/Supply Current", builder.currentType_amps);
+                builder.makeSyncLogEntry("DecisionRollers/Supply Current", builder.currentType_amps);
         m_logStatorCurrent =
-                builder.makeSyncLogEntry("Serializer/Stator Current", builder.currentType_amps);*/
+                builder.makeSyncLogEntry("DecisionRollers/Stator Current", builder.currentType_amps);*/
     }
 
     @Override
