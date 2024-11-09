@@ -31,10 +31,13 @@ public class Robot {
     public Robot() {
         if (RobotRunner.isReal()) {
             m_feeder = new Serializer(new FeederRollersHal(), new DecisionRollersHal(), new SensorHal());
-            m_elevator = new Elevator(new ElevatorRollersHal(), new frc.robot.subsystems.elevator.sensor.SensorHal());
+            m_elevator = new Elevator(
+                    new ElevatorRollersHal(), new frc.robot.subsystems.elevator.sensor.SensorHal());
         } else {
-            m_feeder = new Serializer(new FeederRollersDummyHal(), new DecisionRollersDummyHal(), new SensorDummyHal());
-            m_elevator = new Elevator(new ElevatorRollersDummyHal(), new frc.robot.subsystems.elevator.sensor.SensorHal());
+            m_feeder = new Serializer(
+                    new FeederRollersDummyHal(), new DecisionRollersDummyHal(), new SensorDummyHal());
+            m_elevator = new Elevator(
+                    new ElevatorRollersDummyHal(), new frc.robot.subsystems.elevator.sensor.SensorHal());
         }
 
         configureBindings();
@@ -45,13 +48,10 @@ public class Robot {
     private void configureBindings() {
         m_driveController.b().whileTrue(m_feeder.intake());
 
-        m_driveController.x().onTrue(
-            Commands.race(
-                m_feeder.loadElevator(),
-                m_elevator.loadNote()));
-        
+        m_driveController.x().onTrue(Commands.race(m_feeder.loadElevator(), m_elevator.loadNote()));
+
         m_driveController.a().whileTrue(m_feeder.ejectNote());
-        
+
         m_driveController.y().onTrue(m_elevator.ejectNote());
     }
 

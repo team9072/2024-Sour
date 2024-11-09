@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.serializer.decisionRollers.DecisionRollersHalI;
 import frc.robot.subsystems.serializer.feeder.FeederRollersHalI;
 import frc.robot.subsystems.serializer.sensors.SensorHalI;
-
 import org.growingstems.measurements.Measurements.Voltage;
 
 public class Serializer extends SubsystemBase {
@@ -16,7 +15,8 @@ public class Serializer extends SubsystemBase {
     private final Trigger m_frontSensor;
     private final Trigger m_rearSensor;
 
-    public Serializer(FeederRollersHalI intakeRollers, DecisionRollersHalI decisionRollers, SensorHalI sensors) {
+    public Serializer(
+            FeederRollersHalI intakeRollers, DecisionRollersHalI decisionRollers, SensorHalI sensors) {
         m_intakeRollers = intakeRollers;
         m_decisionRollers = decisionRollers;
         m_frontSensor = new Trigger(sensors::frontHasNote);
@@ -82,8 +82,9 @@ public class Serializer extends SubsystemBase {
     }
 
     public Command loadElevator() {
-        return reverse().until(m_rearSensor.negate())
-            .andThen(run(this::startFeedElevator))
-            .finallyDo(this::stopRollers);
+        return reverse()
+                .until(m_rearSensor.negate())
+                .andThen(run(this::startFeedElevator))
+                .finallyDo(this::stopRollers);
     }
 }
