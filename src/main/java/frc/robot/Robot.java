@@ -15,8 +15,6 @@ import frc.robot.subsystems.intake.rollers.IntakeRollersHal;
 public class Robot {
     public static final String k_canivoreCan = "canivore1";
 
-    public static final CommandXboxController m_driverController = new CommandXboxController(0);
-
     private Command m_autoCommand = null;
     private final Intake m_intake;
 
@@ -32,9 +30,7 @@ public class Robot {
 
     public void update() {}
 
-    private void configureBindings() {
-        m_driverController.b().whileTrue(m_intake.intake());
-    }
+    private void configureBindings() {}
 
     public void updateAutoCommand() {}
 
