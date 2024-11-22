@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.deploy.IntakeDeployDummyHal;
 import frc.robot.subsystems.intake.deploy.IntakeDeployHal;
@@ -13,6 +14,8 @@ import frc.robot.subsystems.intake.rollers.IntakeRollersHal;
 
 public class Robot {
     public static final String k_canivoreCan = "canivore1";
+
+    public static final CommandXboxController m_driverController = new CommandXboxController(0);
 
     private Command m_autoCommand = null;
     private final Intake m_intake;
@@ -29,7 +32,9 @@ public class Robot {
 
     public void update() {}
 
-    private void configureBindings() {}
+    private void configureBindings() {
+        m_driverController.b().whileTrue(m_intake.intake());
+    }
 
     public void updateAutoCommand() {}
 
