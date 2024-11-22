@@ -79,6 +79,8 @@ dependencies {
 
     implementation 'org.growingstems:gstems-common:1.5.1.0-RC2'
     implementation 'org.growingstems:gstems-frc-common:1.5.0.1-RC1'
+    implementation 'com.google.code.gson:gson:2.9.1'
+
 }
 
 test {
