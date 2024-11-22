@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import org.growingstems.measurements.Measurements.Voltage;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,14 +11,14 @@ import frc.robot.subsystems.intake.rollers.IntakeRollersHalI;
 
 public class Intake extends SubsystemBase {
     public enum IntakePosition {
-        Stow,
-        Clear,
-        Deploy;
+        Stow(54),
+        Clear(45),
+        Deploy(-39);
 
         public final double degrees;
 
-        IntakePosition() {
-            degrees = 0; //TODO: actual positon
+        IntakePosition(double positionDegrees) {
+            degrees = positionDegrees;
         };
     }
 
@@ -38,6 +39,11 @@ public class Intake extends SubsystemBase {
     public Intake(IntakeRollersHalI rollers, IntakeDeployHalI deploy) {
         m_rollers = rollers;
         m_deploy = deploy;
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Intake/Pivot position", m_deploy.getPosition());
     }
 
     private void stopRollers() {
