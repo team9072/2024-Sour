@@ -9,6 +9,4 @@ public interface IntakeRollersHalI extends StartupNeutralMode {
     void coast();
 
     void setPower(Voltage power);
-
-    void update();
 }

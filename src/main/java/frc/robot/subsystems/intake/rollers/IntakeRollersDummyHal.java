@@ -14,11 +14,6 @@ public class IntakeRollersDummyHal implements IntakeRollersHalI {
     }
 
     @Override
-    public void update() {
-        // NOP
-    }
-
-    @Override
     public void brake() {
         // NOP
     }
