@@ -34,14 +34,7 @@ public class IntakeRollersHal implements IntakeRollersHalI {
     private static final Current k_supplyCurrentLimit = Current.amps(25.0);
     private static final Current k_statorCurrentLimit = Current.amps(120.0);
 
-    //
-
-    // Logging
-    private final Consumer<Voltage> m_logPower;
-    private final Consumer<Current> m_logSupplyCurrent;
-    private final Consumer<Current> m_logStatorCurrent;
-
-    public IntakeRollersHal(LogBuilder builder) {
+    public IntakeRollersHal() {
         // --------------------
         //    Motor Settings
         // --------------------
@@ -93,23 +86,6 @@ public class IntakeRollersHal implements IntakeRollersHalI {
         //    Actuator Settings
         // -----------------------
         m_actuator = TalonFxActuator.motorActuator(m_motor);
-
-        // -------------
-        //    Logging
-        // -------------
-        m_logPower = builder.makeSyncLogEntry("Intake/Roller/Power", builder.voltageType_volts);
-        m_logSupplyCurrent =
-                builder.makeSyncLogEntry("Intake/Roller/Supply Current", builder.currentType_amps);
-        m_logStatorCurrent =
-                builder.makeSyncLogEntry("Intake/Roller/Stator Current", builder.currentType_amps);
-    }
-
-    @Override
-    public void update() {
-        // Logging
-        m_logPower.accept(Voltage.volts(m_motor.getMotorVoltage().getValueAsDouble()));
-        m_logSupplyCurrent.accept(Current.amps(m_motor.getSupplyCurrent().getValueAsDouble()));
-        m_logStatorCurrent.accept(Current.amps(m_motor.getStatorCurrent().getValueAsDouble()));
     }
 
     @Override
