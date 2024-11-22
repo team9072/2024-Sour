@@ -13,7 +13,7 @@ public class Intake extends SubsystemBase {
     public enum IntakePosition {
         Stow(54),
         Clear(45),
-        Deploy(-39);
+        Deploy(-43.5);
 
         public final double degrees;
 
@@ -67,12 +67,12 @@ public class Intake extends SubsystemBase {
     }
 
     private void setStow() {
-        setPosition(IntakePosition.Deploy);
+        setPosition(IntakePosition.Stow);
         stopRollers();
     }
 
     private void setClear() {
-        setPosition(IntakePosition.Deploy);
+        setPosition(IntakePosition.Clear);
         stopRollers();
     }
 
