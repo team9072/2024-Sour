@@ -1,10 +1,11 @@
 package frc.robot.subsystems.intake.deploy;
 
 public interface IntakeDeployHalI {
-    public void setPosition(double degrees);
-    //Set thecurrent position as the home point
-    public double setHomePoint();
+    public void setPosition(double positionDegrees);
+
+    //Set the current position as the home point
+    public void setHomePoint();
+
+    public double getPosition();
     public double getVelocity();
-    // Retursn postion error between actual and set position
-    public double getError();
 }

@@ -1,29 +1,30 @@
 package frc.robot.subsystems.intake.deploy;
 
-import org.growingstems.control.actuators.MotorActuator;
-import org.growingstems.control.actuators.PositionActuator;
-import org.growingstems.frc.actuators.TalonFxActuator;
 import org.growingstems.measurements.Measurements.Current;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
 import frc.library.CtreUtils;
 import frc.robot.Robot;
 
 public class IntakeDeployHal implements IntakeDeployHalI {
 
     // Motor
-    public final TalonFX m_motor;
+    private final TalonFX m_motor;
+    private final MotionMagicVoltage m_control;
     private final TalonFXConfigurator m_configurator;
 
     // Motor Configuration
@@ -32,13 +33,18 @@ public class IntakeDeployHal implements IntakeDeployHalI {
     // CounterClockwise_Positive is the default value of a TalonFX
     private static final InvertedValue k_invertedSetting = InvertedValue.Clockwise_Positive;
     
-    private static final Current k_supplyCurrentLimit = Current.amps(25.0);
+    private static final Current k_supplyCurrentLimit = Current.amps(35.0);
     private static final Current k_statorCurrentLimit = Current.amps(120.0);
     
     // PID Configs
     private static final double k_sensorToMechanism = 49.7;
-    private static final double k_g = 0.6;
-
+    private static final double k_realHomeRotations = 0.15;
+    private static final double kG = 0.15;
+    private static final double kP = 20;
+    private static final double kV = 6;
+    
+    private static final double k_acceleration = 3;
+    private static final double k_velocity = 4;
 
     public IntakeDeployHal() {
         
@@ -70,8 +76,15 @@ public class IntakeDeployHal implements IntakeDeployHalI {
         
         var pid = new Slot0Configs();
         pid.GravityType = GravityTypeValue.Arm_Cosine;
-        pid.kG = k_g;
+        pid.kG = kG;
+        pid.kP = kP;
+        pid.kV= kV;
         configuration.withSlot0(pid);
+
+        var motionMagic = new MotionMagicConfigs();
+        motionMagic.MotionMagicAcceleration = k_acceleration;
+        motionMagic.MotionMagicCruiseVelocity = k_velocity;
+        configuration.withMotionMagic(motionMagic);
 
         m_configurator.apply(configuration, CtreUtils.k_defaultConfiguratorTimeout.asSeconds());
 
@@ -98,30 +111,32 @@ public class IntakeDeployHal implements IntakeDeployHalI {
                 m_motor.getStickyFaultField());
         m_motor.optimizeBusUtilization();
 
+        setHomePoint();
+
+        m_control = new MotionMagicVoltage(k_realHomeRotations);
+        m_control.EnableFOC = false;
+        m_control.Slot = 0;
     }
 
     @Override
-    public void setPosition(double degrees) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+    public void setPosition(double positionDegrees) {
+        m_control.Position = Units.degreesToRotations(positionDegrees);
+        m_motor.setControl(m_control);
+    }
+    
+    @Override
+    public void setHomePoint() {
+        m_motor.setPosition(k_realHomeRotations, CtreUtils.k_defaultConfiguratorTimeout.asSeconds());
     }
 
     @Override
-    public double setHomePoint() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setHomePoint'");
+    public double getPosition() {
+        return Units.rotationsToDegrees(m_motor.getPosition().getValueAsDouble());
     }
 
     @Override
     public double getVelocity() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getVelocity'");
-    }
-
-    @Override
-    public double getError() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getError'");
+        return Units.rotationsToDegrees(m_motor.getVelocity().getValueAsDouble());
     }
     
 }
