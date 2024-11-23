@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.logging.LogBuilder;
 import frc.robot.subsystems.Drive;
@@ -12,6 +14,7 @@ public class Robot {
     public static final String k_canivoreCan = "CANivore";
     private Command m_autoCommand = null;
     private Drive m_drive;
+    private TeleopControls m_controls = new TeleopControls();
 
     public Robot(LogBuilder builder) {
         configureBindings();
@@ -22,7 +25,7 @@ public class Robot {
     public void update() {}
 
     private void configureBindings() {
-        m_drive.setDefaultCommand(m_drive.getDirectDriveFCommand(null, null, null));
+        m_drive.setDefaultCommand(m_drive.getDirectDriveFCommand(m_controls.drivePowerSupplier, m_controls.turnPowerSupplier, DriveRequestType.OpenLoopVoltage));
     }
 
     public void updateAutoCommand() {}
