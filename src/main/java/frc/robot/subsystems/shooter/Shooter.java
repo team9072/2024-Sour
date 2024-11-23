@@ -16,7 +16,7 @@ public class Shooter extends SubsystemBase {
     private final SysIdRoutine m_bottomWheelsSysId = wheelsSysId(false);
 
     private SysIdRoutine wheelsSysId(boolean top) {
-        String stateKey = "Shooter Wheels (" + (top ? "Top" : "Bottom") + ") SysId State";
+        String stateKey = "ShooterWheels-" + (top ? "Top" : "Bottom") + "_SysIdState";
         return new SysIdRoutine(
                 new SysIdRoutine.Config(
                         null, // Use default ramp rate (1 V/s)
