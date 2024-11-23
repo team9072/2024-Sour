@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.shooter.wheels.ShooterWheelsHalI;
@@ -31,19 +32,24 @@ public class Shooter extends SubsystemBase {
         m_wheels = wheels;
     }
 
+    private Command spindownWheelsSysId() {
+        return Commands.sequence(
+                Commands.waitSeconds(2), runOnce(m_wheels::brake), Commands.waitSeconds(1));
+    }
+
     public Command topWheelsSysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_topWheelsSysId.quasistatic(direction);
+        return m_topWheelsSysId.quasistatic(direction).andThen(spindownWheelsSysId());
     }
 
     public Command topWheelsSysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_topWheelsSysId.dynamic(direction);
+        return m_topWheelsSysId.dynamic(direction).andThen(spindownWheelsSysId());
     }
 
     public Command bottomWheelsSysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_bottomWheelsSysId.quasistatic(direction);
+        return m_bottomWheelsSysId.quasistatic(direction).andThen(spindownWheelsSysId());
     }
 
     public Command bottomWheelsSysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_bottomWheelsSysId.dynamic(direction);
+        return m_bottomWheelsSysId.dynamic(direction).andThen(spindownWheelsSysId());
     }
 }

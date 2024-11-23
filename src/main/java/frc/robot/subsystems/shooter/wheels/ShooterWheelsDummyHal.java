@@ -4,6 +4,11 @@ public class ShooterWheelsDummyHal implements ShooterWheelsHalI {
     private double m_fakeSpeed = 0;
 
     @Override
+    public void brake() {
+        // NOP
+    }
+
+    @Override
     public void coast() {
         // NOP
     }

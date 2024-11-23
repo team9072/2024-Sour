@@ -4,9 +4,10 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,7 +23,8 @@ public class ShooterWheelsHal implements ShooterWheelsHalI {
     private final TalonFXConfigurator m_topConfigurator;
     private final TalonFXConfigurator m_bottomConfigurator;
 
-    private final NeutralOut m_neutralControl = new NeutralOut();
+    private final CoastOut m_coastControl = new CoastOut();
+    private final StaticBrake m_brakeControl = new StaticBrake();
     private final VoltageOut m_voltageControl = new VoltageOut(0);
     private final MotionMagicVelocityVoltage m_velocityControl = new MotionMagicVelocityVoltage(0);
     private final Follower m_bottomControl = new Follower(k_topCanId, true);
@@ -74,9 +76,14 @@ public class ShooterWheelsHal implements ShooterWheelsHalI {
         m_bottomMotor.setControl(m_bottomControl);
     }
 
+    public void brake() {
+        m_topMotor.setControl(m_brakeControl);
+        m_bottomMotor.setControl(m_brakeControl);
+    }
+
     public void coast() {
-        m_topMotor.setControl(m_neutralControl);
-        m_bottomMotor.setControl(m_bottomControl);
+        m_topMotor.setControl(m_coastControl);
+        m_bottomMotor.setControl(m_coastControl);
     }
 
     @Override
@@ -90,10 +97,10 @@ public class ShooterWheelsHal implements ShooterWheelsHalI {
     public void setVoltageSysId(double volts, boolean top) {
         if (top) {
             m_topMotor.setControl(m_voltageControl.withOutput(volts));
-            m_bottomMotor.setControl(m_neutralControl);
+            m_bottomMotor.setControl(m_brakeControl);
         } else {
             m_bottomMotor.setControl(m_voltageControl.withOutput(volts));
-            m_topMotor.setControl(m_neutralControl);
+            m_topMotor.setControl(m_brakeControl);
         }
     }
 

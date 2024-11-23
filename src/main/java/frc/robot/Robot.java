@@ -42,20 +42,22 @@ public class Robot {
 
     private void configureSysIdBindings() {
         // Shooter wheels just spin, so it is safe to lt them run unattended
-        m_driverController.a().onTrue(Commands.sequence(
-            Commands.runOnce(SignalLogger::start),
-            // Top wheels SysId
-            m_shooter.topWheelsSysIdDynamic(Direction.kForward), Commands.waitSeconds(2),
-            m_shooter.topWheelsSysIdDynamic(Direction.kReverse), Commands.waitSeconds(2),
-            m_shooter.topWheelsSysIdQuasistatic(Direction.kForward), Commands.waitSeconds(2),
-            m_shooter.topWheelsSysIdQuasistatic(Direction.kReverse), Commands.waitSeconds(2),
-            // Bottom wheels SysId
-            m_shooter.bottomWheelsSysIdDynamic(Direction.kForward), Commands.waitSeconds(2),
-            m_shooter.bottomWheelsSysIdDynamic(Direction.kReverse), Commands.waitSeconds(2),
-            m_shooter.bottomWheelsSysIdQuasistatic(Direction.kForward), Commands.waitSeconds(2),
-            m_shooter.bottomWheelsSysIdQuasistatic(Direction.kReverse), Commands.waitSeconds(2),
-            Commands.runOnce(SignalLogger::stop)
-        ).onlyIf(RobotState::isTest));
+        m_driverController
+                .a()
+                .onTrue(Commands.sequence(
+                                Commands.runOnce(SignalLogger::start),
+                                // Top wheels SysId
+                                m_shooter.topWheelsSysIdDynamic(Direction.kForward),
+                                m_shooter.topWheelsSysIdDynamic(Direction.kReverse),
+                                m_shooter.topWheelsSysIdQuasistatic(Direction.kForward),
+                                m_shooter.topWheelsSysIdQuasistatic(Direction.kReverse),
+                                // Bottom wheels SysId
+                                m_shooter.bottomWheelsSysIdDynamic(Direction.kForward),
+                                m_shooter.bottomWheelsSysIdDynamic(Direction.kReverse),
+                                m_shooter.bottomWheelsSysIdQuasistatic(Direction.kForward),
+                                m_shooter.bottomWheelsSysIdQuasistatic(Direction.kReverse),
+                                Commands.runOnce(SignalLogger::stop))
+                        .onlyIf(RobotState::isTest));
     }
 
     public void updateAutoCommand() {}

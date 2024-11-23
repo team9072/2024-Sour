@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter.wheels;
 import frc.library.StartupNeutralMode;
 
 public interface ShooterWheelsHalI extends StartupNeutralMode {
+    void brake();
+
     void coast();
 
     @Override
