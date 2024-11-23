@@ -4,6 +4,11 @@ public class ShooterWheelsDummyHal implements ShooterWheelsHalI {
     private double m_fakeSpeed = 0;
 
     @Override
+    public void brake() {
+        // NOP
+    }
+
+    @Override
     public void coast() {
         // NOP
     }
@@ -14,7 +19,7 @@ public class ShooterWheelsDummyHal implements ShooterWheelsHalI {
     }
 
     @Override
-    public void setVoltage(double volts) {
+    public void setVoltageSysId(double volts, boolean top) {
         // NOP
     }
 
