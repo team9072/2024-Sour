@@ -19,8 +19,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.library.swerve.SwerveDriveBrake;
 import frc.library.utils.ConversionUtils;
+import frc.robot.logging.LogBuilder;
+import frc.robot.robotpose.PoseProvider;
 import frc.robot.subsystems.drive.constants.DriveConstants;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import org.growingstems.math.Pose2dU;
@@ -33,7 +36,7 @@ import org.growingstems.measurements.Measurements.Length;
 import org.growingstems.measurements.Measurements.Velocity;
 import org.growingstems.measurements.Measurements.Voltage;
 
-public class CtreSwerveDrive implements SwerveDriveI {
+public class CtreSwerveDrive implements SwerveDriveI, PoseProvider {
     protected final SwerveDrivetrain m_ctreDrive;
 
     // TODO: Remove when CTRE provides a more convenient solution
@@ -65,7 +68,7 @@ public class CtreSwerveDrive implements SwerveDriveI {
     private final Consumer<List<Double>> m_logDriveVoltageOut;
 
     public CtreSwerveDrive(
-            frc.robot.logging.LogBuilder builder,
+            LogBuilder builder,
             SwerveDrivetrainConstants driveTrainConstants,
             DriveConstants moduleConstants) {
         // Create CTRE Swerve Drive
@@ -100,19 +103,19 @@ public class CtreSwerveDrive implements SwerveDriveI {
                 "Swerve/Drive Supply Current Sum", builder.currentType_amps, Current.ZERO);
         m_logDriveSupplyCurrent = builder.makeSyncLogEntry(
                 "Swerve/Drive Supply Current(amps)",
-                builder.toList(builder.doubleType),
+                builder.toList(builder.doubleType, Collections.emptyList()),
                 new ArrayList<Double>(4));
 
         m_logDriveStatorSumCurrent = builder.makeSyncLogEntry(
                 "Swerve/Drive Stator Current Sum", builder.currentType_amps, Current.ZERO);
         m_logDriveStatorCurrent = builder.makeSyncLogEntry(
                 "Swerve/Drive Stator Current(amps)",
-                builder.toList(builder.doubleType),
+                builder.toList(builder.doubleType, Collections.emptyList()),
                 new ArrayList<Double>(4));
 
         m_logDriveVoltageOut = builder.makeSyncLogEntry(
                 "Swerve/Drive Voltage Out(V)",
-                builder.toList(builder.doubleType),
+                builder.toList(builder.doubleType, Collections.emptyList()),
                 new ArrayList<Double>(4));
     }
 
@@ -298,28 +301,39 @@ public class CtreSwerveDrive implements SwerveDriveI {
     // *****************************
     //    Pose Provider Functions
     // *****************************
+    @Override
     public Pose2dU<Length> getPose() {
         return ConversionUtils.fromWpi(m_ctreDrive.getState().Pose);
     }
 
+    @Override
     public void setPose(Pose2dU<Length> pose) {
         m_ctreDrive.seedFieldRelative(ConversionUtils.toWpiMeters(pose));
     }
 
+    @Override
     public Vector2dU<Velocity> getFieldVelocity() {
         return getVelocityVector().rotate(getPose().getRotation());
     }
 
+    @Override
     public AngularVelocity getYawRate() {
         return AngularVelocity.degreesPerSecond(
                 m_ctreDrive.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
     }
 
+    @Override
     public Angle getPitch() {
         return Angle.degrees(m_ctreDrive.getPigeon2().getPitch().getValueAsDouble());
     }
 
+    @Override
     public Angle getRoll() {
         return Angle.degrees(m_ctreDrive.getPigeon2().getRoll().getValueAsDouble());
+    }
+
+    @Override
+    public void updatePose() {
+        // NOP
     }
 }

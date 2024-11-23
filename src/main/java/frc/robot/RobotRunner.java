@@ -5,12 +5,19 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.library.RobotRunnerBase;
+import frc.robot.logging.LogBuilder;
+import java.io.File;
+import java.nio.file.Paths;
 import org.growingstems.measurements.Measurements.Time;
 
 public class RobotRunner extends RobotRunnerBase {
+    public final File k_logDir =
+            Paths.get(Filesystem.getOperatingDirectory().getPath(), "logs").toFile();
+
     private static final Time k_maxDesiredLoopTime = Time.milliseconds(20.0);
 
     private Robot m_robot;
@@ -27,7 +34,8 @@ public class RobotRunner extends RobotRunnerBase {
 
     @Override
     public void robotInit() {
-        m_robot = new Robot();
+        var builder = new LogBuilder(k_logDir, "RobotLog");
+        m_robot = new Robot(builder);
     }
 
     @Override
