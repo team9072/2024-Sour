@@ -1,7 +1,5 @@
 package frc.robot.subsystems.shooter.wheels;
 
-import org.growingstems.measurements.Measurements.Current;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -13,9 +11,9 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import frc.library.CtreUtils;
 import frc.robot.Robot;
+import org.growingstems.measurements.Measurements.Current;
 
 public class ShooterWheelsHal implements ShooterWheelsHalI {
     // Motor
@@ -78,17 +76,25 @@ public class ShooterWheelsHal implements ShooterWheelsHalI {
 
     public void coast() {
         m_topMotor.setControl(m_neutralControl);
+        m_bottomMotor.setControl(m_bottomControl);
     }
 
     @Override
     public void setSpeed(double speedRpm) {
+        m_bottomMotor.setControl(m_bottomControl);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setSpeed'");
     }
 
     @Override
-    public void setVoltage(double volts) {
-        m_topMotor.setControl(m_voltageControl.withOutput(volts));
+    public void setVoltageSysId(double volts, boolean top) {
+        if (top) {
+            m_topMotor.setControl(m_voltageControl.withOutput(volts));
+            m_bottomMotor.setControl(m_neutralControl);
+        } else {
+            m_bottomMotor.setControl(m_voltageControl.withOutput(volts));
+            m_topMotor.setControl(m_neutralControl);
+        }
     }
 
     @Override

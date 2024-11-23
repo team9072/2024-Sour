@@ -10,8 +10,17 @@ public interface ShooterWheelsHalI extends StartupNeutralMode {
         coast();
     }
 
+    /**
+     * Run SysId for one motor
+     *
+     * @param volts voltage to run motor at
+     * @param top Whether to run top or bottom motor
+     */
+    void setVoltageSysId(double volts, boolean top);
+
     void setSpeed(double speedRpm);
-    void setVoltage(double volts);
+
     double getTopSpeed();
+
     double getBottomSpeed();
 }

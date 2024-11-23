@@ -14,7 +14,7 @@ public class ShooterWheelsDummyHal implements ShooterWheelsHalI {
     }
 
     @Override
-    public void setVoltage(double volts) {
+    public void setVoltageSysId(double volts, boolean top) {
         // NOP
     }
 
