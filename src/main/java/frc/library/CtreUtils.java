@@ -4,9 +4,11 @@
 
 package frc.library;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.growingstems.measurements.Measurements.Time;
 
@@ -27,5 +29,27 @@ public abstract class CtreUtils {
             case Coast -> new CoastOut();
             case Brake -> new StaticBrake();
         };
+    }
+
+    public static final void configureDefaultSignals(TalonFX motor) {
+        // 100 Hz Rate (Every 10ms)
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                100,
+                motor.getPosition(),
+                motor.getVelocity(),
+                motor.getAcceleration(),
+                motor.getSupplyVoltage(),
+                motor.getMotorVoltage(),
+                motor.getSupplyCurrent(),
+                motor.getTorqueCurrent());
+        // 4 Hz Rate (every 100ms)
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                4,
+                motor.getProcessorTemp(),
+                motor.getDeviceTemp(),
+                motor.getAncillaryDeviceTemp(),
+                motor.getFaultField(),
+                motor.getStickyFaultField());
+        motor.optimizeBusUtilization();
     }
 }
