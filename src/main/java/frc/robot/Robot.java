@@ -15,7 +15,7 @@ import frc.robot.subsystems.shooter.wheels.ShooterWheelsDummyHal;
 import frc.robot.subsystems.shooter.wheels.ShooterWheelsHal;
 
 public class Robot {
-    public static final String k_canivoreCan = "CANivore";
+    public static final String k_canivoreCan = "canivore1";
 
     private final CommandXboxController m_driverController = new CommandXboxController(0);
 
