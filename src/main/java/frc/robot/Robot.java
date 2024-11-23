@@ -5,10 +5,11 @@
 package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.logging.LogBuilder;
 import frc.robot.subsystems.Drive;
+import org.growingstems.measurements.Measurements.Length;
+import org.growingstems.measurements.Measurements.Time;
 
 public class Robot {
     public static final String k_canivoreCan = "CANivore";
@@ -25,7 +26,15 @@ public class Robot {
     public void update() {}
 
     private void configureBindings() {
-        m_drive.setDefaultCommand(m_drive.getDirectDriveFCommand(m_controls.drivePowerSupplier, m_controls.turnPowerSupplier, DriveRequestType.OpenLoopVoltage));
+        m_drive.setDefaultCommand(m_drive.getDirectDriveFCommand(
+                m_controls.drivePowerSupplier,
+                m_controls.turnPowerSupplier,
+                DriveRequestType.OpenLoopVoltage));
+
+        // SysID
+        m_controls.runSelectedSysId.onTrue(
+                m_drive.runSysIdRoutineUCommand(Time.seconds(1.0), Length.feet(18.0)));
+        m_controls.runSelectedSysId.onFalse(m_drive.stopICommand());
     }
 
     public void updateAutoCommand() {}

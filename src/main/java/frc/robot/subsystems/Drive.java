@@ -4,54 +4,43 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.library.utils.ConversionUtils;
 import frc.robot.Robot;
+import frc.robot.RobotRunner;
 import frc.robot.logging.LogBuilder;
 import frc.robot.robotpose.PoseProvider;
 import frc.robot.subsystems.drive.CtreSwerveDrive;
 import frc.robot.subsystems.drive.SwerveDriveI;
 import frc.robot.subsystems.drive.constants.DriveConstants;
 import frc.robot.subsystems.drive.constants.SourDriveConstants;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import org.growingstems.frc.util.RobotMatchState;
+import org.growingstems.frc.util.RobotMatchState.MatchMode;
 import org.growingstems.math.Vector2dU;
 import org.growingstems.measurements.Angle;
 import org.growingstems.measurements.Measurements.AngularVelocity;
-import org.growingstems.measurements.Measurements.Frequency;
-import org.growingstems.measurements.Measurements.FrequencySquared;
 import org.growingstems.measurements.Measurements.Length;
 import org.growingstems.measurements.Measurements.Time;
-import org.growingstems.measurements.Measurements.Unitless;
 import org.growingstems.measurements.Measurements.Velocity;
+import org.growingstems.measurements.Measurements.Voltage;
+import org.growingstems.signals.Memory;
 
 public class Drive extends SubsystemBase {
     private final SwerveDriveI m_swerveDrive;
     private final PoseProvider m_poseProvider;
-
-    // PID constants
-    private static final double k_pidPeriodApproximation = 0.02;
-
-    // Angular Velocity per Angle-Error
-    private static final Frequency k_headingPid_p =
-            AngularVelocity.revolutionsPerSecond(1.0).div(Angle.degrees(72.0));
-    // Angular Velocity per Angle-Error/Time
-    private static final Unitless k_headingPid_d =
-            AngularVelocity.revolutionsPerSecond(0.0).div(AngularVelocity.revolutionsPerSecond(1.0));
-
-    // Velocity per Length-Error
-    private static final Frequency k_translationPid_p =
-            Velocity.inchesPerSecond(8.0).div(Length.inches(1.0));
-    // Velocity per Length-Error*Time
-    private static final FrequencySquared k_translationPid_i =
-            Velocity.inchesPerSecond(0.0).div(Length.inches(1.0).mul(Time.seconds(1.0)));
-    // Velocity per Length-Error/Time
-    private static final Unitless k_translationPid_d =
-            Velocity.inchesPerSecond(0.0).div(Velocity.inchesPerSecond(1.0));
 
     public Drive(LogBuilder builder) {
         // CTRE Swerve Module Constants
@@ -154,5 +143,62 @@ public class Drive extends SubsystemBase {
                     m_swerveDrive.idleRotate();
                 }))
                 .finallyDo(() -> m_swerveDrive.setDriveBrake());
+    }
+
+    /**
+     * <b>WARNING:</b> This command should only be used in an environment that allows for enough space
+     * for the robot to drive forward and backwards, in a straight line, a significant distance
+     * without running into anything/anyone. This command should <b>NEVER</b> be used during a
+     * competition. If this command is ran while {@link RobotRunner#isCompetition()} is set true and
+     * the robot isn't currently in TEST mode, this function will return an empty
+     * {@link InstantCommand}.
+     */
+    public Command runSysIdRoutineUCommand(Time delayBetweenTests, Length testDistance) {
+        BooleanSupplier okToRun = () -> !RobotRunner.isCompetition()
+                && (RobotMatchState.getMatchState().matchMode == MatchMode.TEST);
+
+        var sysIdRoutine = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        null, // Default ramp rate is acceptable
+                        ConversionUtils.toWpi(
+                                Voltage.volts(4.0)), // Reduce dynamic voltage to 4 to prevent motor brownout
+                        null, // Default timeout is acceptable
+                        // Log state with Phoenix SignalLogger class
+                        (state) -> SignalLogger.writeString("state", state.toString())),
+                new SysIdRoutine.Mechanism(
+                        (Measure<edu.wpi.first.units.Voltage> volts) -> {
+                            Velocity vel =
+                                    Velocity.metersPerSecond(ConversionUtils.fromWpiVoltage(volts).asVolts());
+                            var vector = Vector2dU.fromPolar(vel, Angle.ZERO);
+                            m_swerveDrive.setRobotCentric(
+                                    vector, AngularVelocity.ZERO, DriveRequestType.OpenLoopVoltage);
+                        },
+                        null,
+                        this,
+                        "Swerve Drive"));
+
+        var startPosition = new Memory<Vector2dU<Length>>();
+        Runnable resetStartPosition =
+                () -> startPosition.update(m_poseProvider.getPose().getVector());
+        Supplier<Command> resetStartPositionSupplier = () -> new InstantCommand(resetStartPosition);
+        BooleanSupplier tooFar = () -> startPosition
+                .getLastValue()
+                .rangeTo(m_poseProvider.getPose().getVector())
+                .ge(testDistance);
+        return new InstantCommand(m_swerveDrive::configForSysIdRoutine)
+                .andThen(
+                        resetStartPositionSupplier.get(),
+                        sysIdRoutine.dynamic(Direction.kForward).until(tooFar),
+                        resetStartPositionSupplier.get(),
+                        new WaitCommand(delayBetweenTests.asSeconds()),
+                        sysIdRoutine.dynamic(Direction.kReverse).until(tooFar),
+                        resetStartPositionSupplier.get(),
+                        new WaitCommand(delayBetweenTests.asSeconds()),
+                        sysIdRoutine.quasistatic(Direction.kForward).until(tooFar),
+                        resetStartPositionSupplier.get(),
+                        new WaitCommand(delayBetweenTests.asSeconds()),
+                        sysIdRoutine.quasistatic(Direction.kReverse).until(tooFar),
+                        stopICommand())
+                .onlyIf(okToRun);
     }
 }

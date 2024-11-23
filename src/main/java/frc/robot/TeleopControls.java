@@ -33,6 +33,8 @@ public class TeleopControls {
     public final Trigger resetImu;
     public final Trigger slowMode;
 
+    public final Trigger runSelectedSysId;
+
     // These are the correct values
     protected static final int dPadUp = 0;
     protected static final int dPadUR = 45;
@@ -113,6 +115,8 @@ public class TeleopControls {
         drivePowerSupplier = m_translationModifier.provide(translationInput);
         Supplier<Unitless> rotationInput = () -> Unitless.none(-m_driver.getRightX());
         turnPowerSupplier = m_rotationModifier.provide(rotationInput);
+
+        runSelectedSysId = new Trigger(m_driver::getAButton);
     }
 
     public Command getEnableSlowModeICommand() {
